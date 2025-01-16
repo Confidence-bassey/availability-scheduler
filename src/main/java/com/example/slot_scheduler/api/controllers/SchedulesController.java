@@ -1,8 +1,10 @@
 package com.example.slot_scheduler.api.controllers;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.slot_scheduler.core.abstractions.services.AvailabilityService;
 import com.example.slot_scheduler.core.abstractions.services.SchedulerService;
 import com.example.slot_scheduler.core.domain.entities.Schedule;
+import com.example.slot_scheduler.core.domain.models.TimeSlot;
 import com.example.slot_scheduler.core.domain.models.requests.NewEvent;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -22,9 +27,11 @@ import com.example.slot_scheduler.core.domain.models.requests.NewEvent;
 public class SchedulesController {
 
     private final SchedulerService schedulerService;
+    private final AvailabilityService availabilityService;
 
-    public SchedulesController(SchedulerService schedulerService) {
+    public SchedulesController(SchedulerService schedulerService, AvailabilityService availabilityService) {
         this.schedulerService = schedulerService;
+        this.availabilityService = availabilityService;
         
     }
 
@@ -60,6 +67,12 @@ public class SchedulesController {
         }
         schedulerService.removeSchedule(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("availability/{date}")
+    public ResponseEntity<?> getAvailability(@PathVariable("date") LocalDateTime date) {
+        List<TimeSlot> availabilitySlots = availabilityService.searchAvailability(date);
+        return ResponseEntity.ok(availabilitySlots);
     }
     
 }

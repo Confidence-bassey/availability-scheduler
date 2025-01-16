@@ -1,6 +1,9 @@
 package com.example.slot_scheduler.core.domain.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.TimeZone;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -77,6 +80,15 @@ public class Schedule {
 
     public enum ScheduleType {
         TASK, EVENT, APPOINTMENT, AVAILABILITY
+    }
+
+
+    public static Schedule ofDefaultDayAvailability() {
+        LocalDateTime today = LocalDate.now().atStartOfDay();
+        return Schedule.builder()
+                .starTime(today.withHour(9))
+                .endTime(today.withHour(17))
+                .build();
     }
     
 }
