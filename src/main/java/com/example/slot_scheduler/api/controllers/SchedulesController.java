@@ -1,5 +1,6 @@
 package com.example.slot_scheduler.api.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -55,8 +56,14 @@ public class SchedulesController {
 
     @PostMapping("create")
     public ResponseEntity<?> addSchedule(@RequestBody @Valid NewEvent request) {
-        Schedule createdEvent = schedulerService.addSchedule(request);
-        return ResponseEntity.ok(createdEvent);
+        try {
+            Schedule createdEvent = schedulerService.addSchedule(request);
+            return ResponseEntity.ok(createdEvent);
+        }
+        catch(Exception exception) {
+            return ResponseEntity.internalServerError().body(exception.getMessage());
+        }
+        
     }
 
     @DeleteMapping("{id}")
@@ -70,7 +77,7 @@ public class SchedulesController {
     }
 
     @GetMapping("availability/{date}")
-    public ResponseEntity<?> getAvailability(@PathVariable("date") LocalDateTime date) {
+    public ResponseEntity<?> getAvailability(@PathVariable("date") LocalDate date) {
         List<TimeSlot> availabilitySlots = availabilityService.searchAvailability(date);
         return ResponseEntity.ok(availabilitySlots);
     }
